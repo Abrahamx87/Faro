@@ -9,6 +9,20 @@ const colors = {low:'green',medium:'amber',high:'pink',unknown:'gray'};
 const statusLabels = {complete:'Análisis completado',partial:'Análisis parcial',unsupported:'Contenido no evaluado'};
 const severityLabels = {low:'Baja',medium:'Media',high:'Alta'};
 const HISTORY_KEY = 'faro.history.v1';
+const transport = window.faroTransport || {
+  async analyze(path, body, headers) {
+    const response = await fetch(path,{method:'POST',headers,body,signal:AbortSignal.timeout(25000)});
+    const payload = await response.json();
+    if(!response.ok) throw new Error(payload.error || 'No se pudo completar el análisis.');
+    return payload;
+  },
+  async health() {
+    const response = await fetch('/api/health',{signal:AbortSignal.timeout(5000)});
+    if(!response.ok) throw new Error();
+    const health = await response.json();
+    return health.pdf_parser_available ? 'Motor local disponible' : 'PDF: dependencia pendiente';
+  },
+};
 let report = null;
 let history = [];
 let busy = false;
@@ -105,10 +119,7 @@ async function runAnalysis(path,body,headers,name) {
   $('loading-name').textContent = name;
   document.querySelectorAll('.demo-button,#choose-file').forEach(b=>{b.disabled=true;});
   try {
-    const response = await fetch(path,{method:'POST',headers,body,signal:AbortSignal.timeout(25000)});
-    const payload = await response.json();
-    if(!response.ok) throw new Error(payload.error || 'No se pudo completar el análisis.');
-    report = payload;
+    report = await transport.analyze(path,body,headers);
     renderReport();
   } catch(err) {
     report = null;
@@ -178,7 +189,7 @@ $('copy-hash').addEventListener('click',async()=>{
 const ruleExamples=[['file.extension_mismatch','Extensión distinta al contenido',30],['html.password','Campo de contraseña',20],['html.credential_destination','Formulario de contraseña con destino de red',35],['html.link_mismatch','Texto del enlace distinto al destino',25],['pdf.javascript','JavaScript en el PDF',20],['pdf.launch','Acción Launch',45],['office.macros','Presencia de macros',30],['url.userinfo','Usuario incrustado en una URL',25],['text.urgency','Texto de urgencia',5]];
 $('rules-list').innerHTML=ruleExamples.map(([id,title,points])=>`<div class="rule-line"><span>${esc(title)}<br><small>${esc(id)}</small></span><strong>+${points} puntos</strong></div>`).join('');
 async function checkHealth(){
-  try{const r=await fetch('/api/health',{signal:AbortSignal.timeout(5000)});if(!r.ok)throw new Error();const health=await r.json();$('connection').innerHTML=health.pdf_parser_available?'<span class="status-light"></span>Motor local disponible':'PDF: dependencia pendiente';}
-  catch(_){$('connection').textContent='Motor sin conexión';}
+  try{$('connection').innerHTML=`<span class="status-light"></span>${esc(await transport.health())}`;}
+  catch(_){$('connection').textContent='Motor no disponible';}
 }
 navigate();renderHistory();checkHealth();
