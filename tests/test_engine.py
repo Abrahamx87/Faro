@@ -6,6 +6,7 @@ from pathlib import Path
 from pypdf import PdfWriter
 from pypdf.generic import DictionaryObject, NameObject, TextStringObject
 
+import faro.engine as engine
 from faro.engine import MAX_BYTES, analyze
 from faro.service import isolated_analysis
 
@@ -82,6 +83,32 @@ class EngineTests(unittest.TestCase):
     def test_bom_only_file_is_empty_text(self):
         r=analyze(b"\xef\xbb\xbf","vacio.txt")
         self.assertEqual((r["file"]["type"],r["status"],r["score"]),("text","complete",0))
+
+    def test_long_pdf_is_complete(self):
+        writer = PdfWriter()
+        for _ in range(164):
+            writer.add_blank_page(width=612, height=792)
+        stream = io.BytesIO()
+        writer.write(stream)
+        r = analyze(stream.getvalue(), "norma.pdf")
+        self.assertEqual((r["status"], r["risk"], r["score"]), ("complete", "low", 0))
+        self.assertEqual(r["details"]["pages"], 164)
+        self.assertEqual(r["warnings"], [])
+
+    def test_pdf_text_time_budget_marks_partial(self):
+        writer = PdfWriter()
+        for _ in range(6):
+            writer.add_blank_page(width=612, height=792)
+        stream = io.BytesIO()
+        writer.write(stream)
+        original = engine.PDF_TEXT_SECONDS
+        engine.PDF_TEXT_SECONDS = -1
+        try:
+            r = analyze(stream.getvalue(), "largo.pdf")
+        finally:
+            engine.PDF_TEXT_SECONDS = original
+        self.assertEqual((r["status"], r["risk"]), ("partial", "unknown"))
+        self.assertTrue(any("de 6 páginas" in w for w in r["warnings"]))
 
     def test_invalid_pdf_is_incomplete(self):
         r=analyze(b"%PDF-1.7\nNo es un PDF real","roto.pdf")

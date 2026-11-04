@@ -17,7 +17,8 @@ MAX_BYTES = 10 * 1024 * 1024
 MAX_EXPANDED = 20 * 1024 * 1024
 MAX_MEMBERS = 500
 MAX_URLS = 200
-MAX_PAGES = 100
+MAX_PAGES = 500
+PDF_TEXT_SECONDS = 7  # presupuesto de tiempo para leer texto; deja margen al límite de 15 s del proceso
 VERSION = "0.1.0"
 URL_RE = re.compile(r"https?://[^\s<>\"'\x00-\x20]+", re.I)
 TEXT_EXTENSIONS = {"", ".txt", ".text", ".md", ".csv", ".tsv", ".json", ".log", ".xml", ".ini", ".yaml", ".yml", ".eml"}
@@ -233,9 +234,9 @@ def _pdf(data, f):
 
     walk(root)
     count = len(reader.pages)
-    if count > MAX_PAGES:
-        f.warn(f"Solo se inspeccionó texto de las primeras {MAX_PAGES} páginas.")
     budget = 0
+    scanned = 0
+    deadline = time.perf_counter() + PDF_TEXT_SECONDS
     for page in reader.pages[:MAX_PAGES]:
         content = page.get_contents()
         if content and len(content.get_data()) > MAX_EXPANDED:
@@ -245,6 +246,11 @@ def _pdf(data, f):
         if budget > MAX_EXPANDED:
             raise LimitReached("Texto PDF superior al límite de extracción.")
         _scan_text(text, f, "Texto del PDF")
+        scanned += 1
+        if time.perf_counter() > deadline:
+            break
+    if scanned < count:
+        f.warn(f"Solo se inspeccionó el texto de las primeras {scanned} de {count} páginas (límite de {MAX_PAGES} páginas o de tiempo).")
     return {"pages": count, "encrypted": False, "objects_checked": counter[0]}
 
 

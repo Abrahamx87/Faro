@@ -89,7 +89,7 @@ Sin activar el entorno, sustituye `python` por `.venv/bin/python` en Linux/macOS
 
 | Formato | Análisis disponible | Limitaciones principales |
 | --- | --- | --- |
-| PDF | Objetos, acciones, enlaces URI y texto | Hasta 100 páginas de texto; sin OCR; no inspecciona adjuntos internos ni PDF cifrado |
+| PDF | Objetos, acciones, enlaces URI y texto | Texto de hasta 500 páginas dentro de un presupuesto de tiempo; sin OCR; no inspecciona adjuntos internos ni PDF cifrado |
 | HTML | Formularios, contraseñas, enlaces, redirecciones y marcos ocultos | Revisión estática; no ejecuta JavaScript; HTML malformado u ofuscado puede evadir reglas |
 | TXT y texto plano (`.txt`, `.md`, `.csv`, `.json`, `.log`…) | Enlaces y lenguaje de urgencia | Texto UTF-8, sin OCR |
 | DOCX / XLSX / PPTX | XML, relaciones externas, presencia de macros y objetos embebidos | Sin descompilar macros ni inspeccionar objetos internos; no interpreta todos los campos, fórmulas o funciones de Office |
