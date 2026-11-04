@@ -1,5 +1,13 @@
 # Arquitectura de Faro
 
+## Edición web
+
+GitHub Pages sirve archivos estáticos. `scripts/build_web.py` reúne la interfaz, el motor Python compartido, pypdf y el entorno de ejecución WebAssembly. `browser/transport.js` selecciona archivos localmente y transfiere los bytes a un proceso de trabajo del navegador (`browser/worker.mjs`), sin enviar peticiones con el archivo. Los archivos de demostración viajan del sitio al navegador como bytes.
+
+El proceso de trabajo borra su copia del archivo tras cada análisis y se reinicia si supera 15 segundos de trabajo. Esta edición no tiene los límites POSIX de la edición de escritorio. La interfaz y el formato del reporte son los mismos en ambas ediciones.
+
+## Edición local con Python
+
 La interfaz en español se comunica con una API Python en el mismo origen. El flujo de un análisis es:
 
 1. El navegador verifica el tamaño y envía bytes a `POST /api/analyze`.
