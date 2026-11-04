@@ -10,7 +10,7 @@ La revisión visual debe incluir carga, señales, enlaces, detalles, historial y
 
 ## Resultado de esta entrega
 
-- 24 pruebas automatizadas aprobadas en Linux con Python 3.12 y pypdf 6.10.0.
+- 31 pruebas automatizadas aprobadas en Linux con Python 3.13 y pypdf 6.17.0. Incluyen regresiones para formatos de texto distintos de `.txt`, la doble extensión en binarios y archivos de solo BOM, y una prueba que mantiene sincronizado el catálogo de reglas (motor, web y `docs/REGLAS.md`). La CI está configurada para ejecutarlas con Python 3.10 y 3.12.
 - Interfaz revisada en navegador de escritorio: análisis de HTML y PDF, carga de archivo, enlaces desactivados, historial voluntario y descarga JSON.
 - Paquete wheel construido correctamente. La matriz Windows/Python 3.10 se configura para GitHub Actions, pero no se ha ejecutado en este entorno.
 - La impresión y el diseño móvil están implementados; no se verificaron visualmente en un dispositivo móvil ni en todos los diálogos de impresión.

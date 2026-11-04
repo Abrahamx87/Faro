@@ -72,7 +72,7 @@ Esta es la edición de escritorio local con interfaz web. La edición de GitHub 
 5. Analiza **Un archivo disfrazado**: el nombre termina en `.pdf`, pero el motor identifica HTML.
 6. Si deseas, activa **Guardar un resumen** y abre **Historial**.
 
-Consulta [la guía para exponer](docs/DEMO.md) y [la arquitectura](docs/ARCHITECTURE.md).
+Consulta [la guía para exponer](docs/DEMO.md), [la arquitectura](docs/ARCHITECTURE.md) y el [catálogo de reglas](docs/REGLAS.md).
 
 ## Línea de comandos
 
@@ -91,7 +91,7 @@ Sin activar el entorno, sustituye `python` por `.venv/bin/python` en Linux/macOS
 | --- | --- | --- |
 | PDF | Objetos, acciones, enlaces URI y texto | Hasta 100 páginas de texto; sin OCR; no inspecciona adjuntos internos ni PDF cifrado |
 | HTML | Formularios, contraseñas, enlaces, redirecciones y marcos ocultos | Revisión estática; no ejecuta JavaScript; HTML malformado u ofuscado puede evadir reglas |
-| TXT | Enlaces y lenguaje de urgencia | Texto UTF-8, sin OCR |
+| TXT y texto plano (`.txt`, `.md`, `.csv`, `.json`, `.log`…) | Enlaces y lenguaje de urgencia | Texto UTF-8, sin OCR |
 | DOCX / XLSX / PPTX | XML, relaciones externas, presencia de macros y objetos embebidos | Sin descompilar macros ni inspeccionar objetos internos; no interpreta todos los campos, fórmulas o funciones de Office |
 | ZIP genérico, Office antiguo, ejecutables, imágenes, LNK | Identificación inicial y nombre | Contenido no evaluado |
 
@@ -124,7 +124,7 @@ faro/
   web/               HTML, CSS y JavaScript sin dependencias externas
   samples/           Tres archivos inofensivos de demostración
 tests/               Pruebas del motor y la API
-docs/                Arquitectura, validación, reglas y guía de exposición
+docs/                Arquitectura, validación, catálogo de reglas (REGLAS.md) y guía de exposición
 ```
 
 ## Equipo y contexto académico

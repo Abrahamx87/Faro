@@ -63,6 +63,26 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(r["status"],"unsupported")
         self.assertNotEqual(r["risk"],"low")
 
+    def test_double_extension_applies_to_binaries(self):
+        r=analyze(b"MZ\x90\x00\xff\x00","factura.pdf.exe")
+        self.assertEqual(r["status"],"unsupported")
+        self.assertIn("file.double_extension",[s["id"] for s in r["signals"]])
+        self.assertEqual(r["risk"],"medium")
+
+    def test_common_text_formats_are_not_mismatches(self):
+        for name in ("alumnos.csv","notas.md","datos.json","bitacora.log","LEEME"):
+            r=analyze(b"nombre,edad\nAna,20\n",name)
+            self.assertEqual((r["file"]["type"],r["score"],r["risk"]),("text",0,"low"),name)
+
+    def test_text_disguised_as_document_is_flagged(self):
+        r=analyze(b"Esto es solo texto plano.","factura.pdf")
+        self.assertEqual(r["file"]["type"],"text")
+        self.assertIn("file.extension_mismatch",[s["id"] for s in r["signals"]])
+
+    def test_bom_only_file_is_empty_text(self):
+        r=analyze(b"\xef\xbb\xbf","vacio.txt")
+        self.assertEqual((r["file"]["type"],r["status"],r["score"]),("text","complete",0))
+
     def test_invalid_pdf_is_incomplete(self):
         r=analyze(b"%PDF-1.7\nNo es un PDF real","roto.pdf")
         self.assertEqual((r["status"],r["risk"]),("partial","unknown"))
