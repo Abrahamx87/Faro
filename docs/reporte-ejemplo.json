@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "engine_version": "0.1.0",
+  "analyzed_at": "2026-11-04T02:09:10.976875+00:00",
+  "file": {
+    "name": "verificacion.html",
+    "size": 619,
+    "sha256": "c300c202fb78fe34911360b1691acd0c795f03d0d87ac5ddc824be3d28c6cd39",
+    "type": "html",
+    "type_label": "Documento HTML"
+  },
+  "status": "complete",
+  "score": 60,
+  "risk": "high",
+  "signals": [
+    {
+      "id": "html.password",
+      "title": "Formulario que solicita una contraseña",
+      "severity": "medium",
+      "weight": 20,
+      "explanation": "Un archivo adjunto que pide credenciales merece revisión antes de utilizarse.",
+      "evidence": [
+        "1 campo(s) de contraseña"
+      ]
+    },
+    {
+      "id": "html.credential_destination",
+      "title": "Contraseña enviada a un destino de red",
+      "severity": "high",
+      "weight": 35,
+      "explanation": "El formulario del archivo puede enviar credenciales fuera del documento. Confirma su legitimidad por otro medio.",
+      "evidence": [
+        "https://verificacion.example.invalid/recibir"
+      ]
+    },
+    {
+      "id": "text.urgency",
+      "title": "Lenguaje de urgencia o presión",
+      "severity": "low",
+      "weight": 5,
+      "explanation": "La presión para actuar puede acompañar un engaño. También existe en mensajes legítimos.",
+      "evidence": [
+        "cuenta suspendida, urgente, verifica tu cuenta"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "url": "https://verificacion.example.invalid/recibir",
+      "host": "verificacion.example.invalid",
+      "source": "HTML: form/action",
+      "flags": []
+    }
+  ],
+  "details": {
+    "forms": 1,
+    "password_fields": 1
+  },
+  "warnings": [],
+  "duration_ms": 3,
+  "limitations": [
+    "La puntuación es una suma heurística; no es una probabilidad de phishing.",
+    "La ausencia de señales no garantiza que un archivo sea seguro.",
+    "No incluye antivirus, reputación de dominios, OCR ni análisis dinámico.",
+    "No abre enlaces, descarga recursos ni ejecuta macros o scripts."
+  ]
+}
