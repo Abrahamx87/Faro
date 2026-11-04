@@ -1,5 +1,6 @@
 # Guía de trabajo para Faro
 
+- **Antes de empezar, lee [docs/CONTEXTO.md](docs/CONTEXTO.md)** (contexto, invariantes, flujo de trabajo y estado). Al terminar tu sesión, añade una fila a su registro de traspaso.
 - `faro/engine.py` es la única fuente de reglas y puntuación. La aplicación local y la edición web comparten ese motor.
 - La web se construye con `npm ci` y `npm run build:web` después de instalar `requirements.txt`. Su código de conexión está en `browser/`; `dist/` es salida generada y no se versiona.
 - Ejecuta `python -m unittest discover -s tests -v` antes de proponer cambios. Para cambios web, prueba los tres ejemplos y un archivo seleccionado en el navegador.
