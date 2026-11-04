@@ -1356,6 +1356,10 @@ td:first-child {
   color:#718591;
 }
 
+.rule-line strong {
+  white-space:nowrap;
+}
+
 .project-info {
   display:grid;
   grid-template-columns:1.5fr 1fr 1fr;

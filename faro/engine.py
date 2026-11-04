@@ -20,7 +20,8 @@ MAX_URLS = 200
 MAX_PAGES = 100
 VERSION = "0.1.0"
 URL_RE = re.compile(r"https?://[^\s<>\"'\x00-\x20]+", re.I)
-EXTENSIONS = {"pdf": {".pdf"}, "html": {".html", ".htm"}, "text": {".txt"},
+TEXT_EXTENSIONS = {"", ".txt", ".text", ".md", ".csv", ".tsv", ".json", ".log", ".xml", ".ini", ".yaml", ".yml", ".eml"}
+EXTENSIONS = {"pdf": {".pdf"}, "html": {".html", ".htm", ".xhtml"}, "text": TEXT_EXTENSIONS,
               "docx": {".docx", ".docm"}, "xlsx": {".xlsx", ".xlsm"}, "pptx": {".pptx", ".pptm"}}
 LABELS = {"pdf": "Documento PDF", "html": "Documento HTML", "text": "Texto UTF-8",
           "docx": "Documento de Word", "xlsx": "Libro de Excel", "pptx": "Presentación PowerPoint",
@@ -303,6 +304,11 @@ def analyze(data: bytes, filename: str):
     f = Findings()
     kind, status, details = "unknown", "complete", {}
     z = None
+    # Regla basada solo en el nombre: se evalúa antes de leer el contenido para
+    # que también aplique a binarios que el motor no puede interpretar.
+    if re.search(r"\.(?:pdf|docx?|xlsx?|jpg|png)\.(?:exe|scr|com|lnk|hta|js|vbs)$", filename, re.I):
+        f.add("file.double_extension", "Nombre con doble extensión engañosa", "high", 40,
+              "La extensión final cambia el tipo aparente del archivo.", filename)
     try:
         if data.startswith(b"%PDF-"):
             kind = "pdf"
@@ -317,15 +323,14 @@ def analyze(data: bytes, filename: str):
                         break
         else:
             text = data.decode("utf-8-sig", errors="strict")
-            if "\x00" not in text and sum(c.isprintable() or c in "\r\n\t" for c in text) / len(text) > .90:
+            if not text:
+                kind = "text"
+            elif "\x00" not in text and sum(c.isprintable() or c in "\r\n\t" for c in text) / len(text) > .90:
                 kind = "html" if re.search(r"<(?:!doctype\s+html|html\b|head\b|body\b|form\b)", text[:65536], re.I) else "text"
         suffix = PurePath(filename).suffix.lower()
         if kind in EXTENSIONS and suffix not in EXTENSIONS[kind]:
             f.add("file.extension_mismatch", "La extensión no coincide con el contenido", "high", 30,
                   "El nombre sugiere un formato diferente al identificado. Puede ser un error o un intento de disfrazar el archivo.", f"Extensión: {suffix or '(sin extensión)'} · contenido: {LABELS[kind]}")
-        if re.search(r"\.(?:pdf|docx?|xlsx?|jpg|png)\.(?:exe|scr|com|lnk|hta|js|vbs)$", filename, re.I):
-            f.add("file.double_extension", "Nombre con doble extensión engañosa", "high", 40,
-                  "La extensión final cambia el tipo aparente del archivo.", filename)
         if kind == "pdf":
             details = _pdf(data, f)
         elif kind == "html":
