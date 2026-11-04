@@ -82,6 +82,7 @@ $('remember').addEventListener('change', () => {
 function reset() {
   if (busy) return;
   report = null;
+  $('page-analizar').classList.remove('working');
   $('results').hidden = true;
   $('upload-area').hidden = false;
   $('error-box').hidden = true;
@@ -112,6 +113,7 @@ document.querySelectorAll('[data-demo]').forEach(button => button.addEventListen
 async function runAnalysis(path,body,headers,name) {
   if(busy) return;
   busy = true;
+  $('page-analizar').classList.add('working');
   $('error-box').hidden = true;
   $('upload-area').hidden = true;
   $('results').hidden = true;
@@ -123,6 +125,7 @@ async function runAnalysis(path,body,headers,name) {
     renderReport();
   } catch(err) {
     report = null;
+    $('page-analizar').classList.remove('working');
     $('upload-area').hidden = false;
     showError(err.name==='TimeoutError' ? 'El motor no respondió a tiempo. El archivo no fue evaluado completamente.' : err instanceof TypeError ? 'No hay conexión con el motor local. Inicia Faro y vuelve a intentarlo.' : err.message);
   } finally {
@@ -187,7 +190,12 @@ $('copy-hash').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(report.file.sha256);toast('Huella SHA-256 copiada.');}catch(_){toast('Copia la huella desde Detalles técnicos.');}
 });
 const ruleCatalog=[['file.extension_mismatch','Extensión distinta al contenido',30],['file.double_extension','Doble extensión engañosa',40],['html.password','Campo de contraseña',20],['html.credential_destination','Formulario de contraseña con destino de red',35],['html.link_mismatch','Texto del enlace distinto al destino',25],['html.hidden_frame','Marco de contenido oculto',15],['html.redirect','Redirección automática',10],['pdf.javascript','JavaScript en el PDF',20],['pdf.launch','Acción Launch',45],['pdf.embedded','Archivo adjunto dentro del PDF',15],['pdf.auto_action','Acciones automáticas en el PDF',5],['office.macros','Presencia de macros',30],['office.remote_template','Plantilla externa de Office',30],['office.embedded','Objeto embebido en el documento',15],['url.userinfo','Usuario incrustado en una URL',25],['url.ip','Dirección IP como destino',15],['url.http','Enlace sin cifrado HTTPS',5],['url.idn','Dominio internacionalizado',5],['url.port','Enlace con puerto poco habitual',5],['text.urgency','Texto de urgencia',5]];
+$('stat-rules').textContent=String(ruleCatalog.length);
 $('rules-list').innerHTML=ruleCatalog.map(([id,title,points])=>`<div class="rule-line"><span>${esc(title)}<br><small>${esc(id)}</small></span><strong>+${points} puntos</strong></div>`).join('');
+document.querySelectorAll('[data-scroll]').forEach(button=>button.addEventListener('click',()=>{
+  const target=$(button.dataset.scroll);
+  if(target) target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+}));
 async function checkHealth(){
   try{$('connection').innerHTML=`<span class="status-light"></span>${esc(await transport.health())}`;}
   catch(_){$('connection').textContent='Motor no disponible';}
