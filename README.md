@@ -14,6 +14,14 @@ Analizador local de señales de phishing en archivos. Un prototipo funcional con
 
 </div>
 
+## Probar en la web
+
+**[Abrir Faro en el navegador](https://abrahamx87.github.io/Faro/)**
+
+La edición web funciona en un navegador compatible con WebAssembly. No requiere instalar Python. Usa el mismo analizador que la edición local y procesa cada archivo dentro del navegador, sin enviarlo a un servidor. La primera carga descarga el motor y sus dependencias desde el sitio; los análisis posteriores no necesitan enviar los archivos a ninguna parte.
+
+Para desarrollar esa edición, instala las dependencias Python de `requirements.txt` y usa `npm ci` seguido de `npm run build:web`. Sirve `dist/` por HTTP, por ejemplo con `python -m http.server 8765 --directory dist`. GitHub Actions construye y publica `dist/` en GitHub Pages. [AGENTS.md](AGENTS.md) documenta las reglas de trabajo para colaboradores y asistentes de código.
+
 ## Lo que ya funciona
 
 - Carga por selección o arrastre, con límite de 10 MiB.
@@ -53,7 +61,7 @@ python3 -m venv .venv
 
 Abre **http://127.0.0.1:8765**. Para detener la aplicación, pulsa `Ctrl+C` en la terminal. El servidor escucha únicamente en la interfaz local por defecto. Si el puerto está ocupado, añade `--port 8766`.
 
-Faro es una aplicación local de Python con interfaz web: **GitHub almacena el código; GitHub Pages no ejecuta este backend**. El servidor incluido es para demostraciones locales, no para exposición pública.
+Esta es la edición de escritorio local con interfaz web. La edición de GitHub Pages ejecuta el motor Python en el navegador; el servidor local sigue disponible para desarrollo y demostraciones, y no está diseñado para exposición pública.
 
 ## Demostración en tres minutos
 

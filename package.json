@@ -1,1 +1,9 @@
-{"name":"faro-local-preview","private":true,"scripts":{"dev":"node scripts/preview.mjs"}}
+{
+  "name": "faro-web",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/preview.mjs",
+    "build:web": "python scripts/build_web.py --runtime node_modules/pyodide --output dist"
+  },
+  "devDependencies": { "pyodide": "0.27.7" }
+}
