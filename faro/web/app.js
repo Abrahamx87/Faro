@@ -26,17 +26,24 @@ const transport = window.faroTransport || {
 let report = null;
 let history = [];
 let busy = false;
-let toastTimer;
+let toastTimer, toastHideTimer;
+const scrollBehavior = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 try {
   const stored = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
   if (Array.isArray(stored)) history = stored.filter(x => x && typeof x.sha256 === 'string' && /^[a-f0-9]{64}$/.test(x.sha256) && Object.hasOwn(riskLabels,x.risk) && typeof x.name==='string' && Number.isFinite(x.score)).slice(0, 30);
 } catch (_) { history = []; }
 
 function toast(message) {
-  $('toast').textContent = message;
-  $('toast').hidden = false;
+  const el = $('toast');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { $('toast').hidden = true; }, 3500);
+  clearTimeout(toastHideTimer);
+  el.classList.remove('out');
+  el.textContent = message;
+  el.hidden = false;
+  toastTimer = setTimeout(() => {
+    el.classList.add('out');
+    toastHideTimer = setTimeout(() => { el.hidden = true; }, 170);
+  }, 3500);
 }
 
 function navigate() {
@@ -87,7 +94,7 @@ function reset() {
   $('upload-area').hidden = false;
   $('error-box').hidden = true;
   $('file-input').value = '';
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0,behavior:scrollBehavior()});
 }
 $('new-analysis').addEventListener('click', reset);
 $('choose-file').addEventListener('click', () => $('file-input').click());
@@ -194,7 +201,7 @@ $('stat-rules').textContent=String(ruleCatalog.length);
 $('rules-list').innerHTML=ruleCatalog.map(([id,title,points])=>`<div class="rule-line"><span>${esc(title)}<br><small>${esc(id)}</small></span><strong>+${points} puntos</strong></div>`).join('');
 document.querySelectorAll('[data-scroll]').forEach(button=>button.addEventListener('click',()=>{
   const target=$(button.dataset.scroll);
-  if(target) target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+  if(target) target.scrollIntoView({behavior:scrollBehavior(),block:'center'});
 }));
 async function checkHealth(){
   try{$('connection').innerHTML=`<span class="status-light"></span>${esc(await transport.health())}`;}

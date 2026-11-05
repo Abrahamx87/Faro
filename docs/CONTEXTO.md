@@ -89,6 +89,7 @@ Flujo de un análisis: la interfaz envía los bytes (API local o Web Worker) →
 - **Capturas de página completa:** la barra lateral y la barra inferior móvil son `fixed`; en una captura completa aparecen a media página. Es un artefacto, no un defecto.
 - **GitHub desde sesiones de Claude Code:** `gh pr create` falla porque GraphQL está bloqueado. Usa la API REST: `gh api repos/Abrahamx87/Faro/pulls --method POST --input pr.json` y, para fusionar, `gh api repos/Abrahamx87/Faro/pulls/N/merge --method PUT -f merge_method=squash`.
 - **Windows:** `worker.py` no aplica los límites POSIX de memoria y CPU; se conservan el tiempo y el proceso separado.
+- **Convenciones de movimiento (revisión con el criterio de Emil Kowalski):** solo se animan `transform` y `opacity`; los efectos de hover con desplazamiento van dentro de `@media(hover:hover) and (pointer:fine)` (en el celular el hover se queda "pegado"); los botones tienen `:active` con `scale(.97)`; las entradas usan `var(--ease-out)` y `@starting-style` (toast y resultados); el scroll por JavaScript pasa por `scrollBehavior()` para respetar `prefers-reduced-motion`; con movimiento reducido el spinner y la barra de carga laten con `opacity` en lugar de congelarse. No pongas `style=` en línea (CSP).
 - **Lecciones de bugs ya corregidos:** una regla basada solo en el nombre debe evaluarse **antes** de decodificar el contenido (si no, se omite en binarios); los textos planos (`.csv`, `.md`, `.json`…) no son discordancia de extensión; un tope fijo de páginas convertía documentos legítimos en "riesgo no determinado".
 
 ## 7. Estado actual
@@ -132,4 +133,5 @@ Agrega una fila **al final** por sesión de trabajo.
 | 2026-11-03 | Claude | Revisión inicial; corrección de falsos positivos de extensión y de la regla de doble extensión; catálogo de 20 reglas (`docs/REGLAS.md`) con prueba de sincronía | #1 | — |
 | 2026-11-03 | Claude | Portada visual: hero con radar animado, cifras y pasos; se oculta durante el análisis | #2 | Edición web compilada solo verificada en CI y en el sitio publicado |
 | 2026-11-04 | Claude | PDF largos: presupuesto de tiempo en vez del tope de 100 páginas (caso ISO 27002, 164 páginas) | #3 | Probar el mismo PDF en el celular tras recargar el sitio |
-| 2026-11-04 | Claude | Este documento de contexto y su enlace desde `AGENTS.md` | (este PR) | Confirmar con Abraham el congelamiento previo a la entrega |
+| 2026-11-04 | Claude | Este documento de contexto y su enlace desde `AGENTS.md` | #4 | Confirmar con Abraham el congelamiento previo a la entrega |
+| 2026-11-05 | Claude | Pulido de movimiento: `:active` en botones, hover solo con mouse, tarjetas de pasos sin elevarse, entrada suave de toast y resultados, scroll del reinicio respeta movimiento reducido, spinner y barra con movimiento reducido, `pulse-dot` sin animar `box-shadow` | (este PR) | Revisar a mano en celular real tras el despliegue |
