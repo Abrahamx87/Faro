@@ -2363,3 +2363,46 @@ td:first-child {
   .sweep,.chip,.blip { animation:none; }
   .pulse-dot:after { display:none; }
 }
+
+/* Pulido v2: transiciones específicas, texto equilibrado, cifras estables y pausa del héroe */
+h1,h2 { text-wrap:balance; }
+p,.hero-lead { text-wrap:pretty; }
+.demo-button {
+  transition:background .18s var(--ease-out),transform .16s var(--ease-out);
+}
+.demo-button .arrow {
+  transition:transform .2s var(--ease-out),color .2s var(--ease-out);
+}
+.demo-button:active:not(:disabled) {
+  transform:scale(.985);
+}
+.tab {
+  transition:color .18s var(--ease-out),border-color .18s var(--ease-out);
+}
+.tab:active {
+  transform:scale(.97);
+}
+@media(hover:hover) and (pointer:fine) {
+  .demo-button:hover .arrow { transform:translateX(3px); color:var(--teal); }
+  .tab:not(.active):hover { color:var(--ink); }
+}
+#risk-score,.summary-stats strong,.stats-band strong,.count,.tab span,.rule-line strong {
+  font-variant-numeric:tabular-nums;
+}
+.motion-toggle {
+  flex-basis:100%;
+  justify-self:start;
+  margin-top:2px;
+  padding:6px 0;
+  font-size:12px;
+  text-align:left;
+}
+.hero.motion-paused .sweep,
+.hero.motion-paused .blip,
+.hero.motion-paused .chip,
+.hero.motion-paused .pulse-dot:after {
+  animation-play-state:paused;
+}
+@media(prefers-reduced-motion:reduce) {
+  .motion-toggle { display:none; }
+}
