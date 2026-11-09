@@ -207,4 +207,9 @@ async function checkHealth(){
   try{$('connection').innerHTML=`<span class="status-light"></span>${esc(await transport.health())}`;}
   catch(_){$('connection').textContent='Motor no disponible';}
 }
+$('motion-toggle').addEventListener('click',(event)=>{
+  const paused=document.querySelector('.hero').classList.toggle('motion-paused');
+  event.currentTarget.setAttribute('aria-pressed',String(paused));
+  event.currentTarget.textContent=paused?'Reanudar animación':'Pausar animación';
+});
 navigate();renderHistory();checkHealth();
